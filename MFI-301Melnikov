@@ -1,1 +1,283 @@
+Основной код программы (метод полного перебора):
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class TravellingSalesperson {
+
+     static int[][] Matrix;
+     static int number0fStreets;
+     static List<Integer[]> AllPermutations = new ArrayList<>();
+     static int shortestPathLength = Integer.MAX_VALUE;
+     static Integer[] shortestPath;
+
+    public static void main(String[] args) {
+        // Пример матрицы расстояний
+        Matrix = new int[][]{
+                {0, 7, 11, 18},
+                {6, 0, 9, 13},
+                {10, 8, 0, 6},
+                {15, 12, 6, 0}
+        };
+        number0fStreets = Matrix.length;
+
+        long startTime = System.nanoTime(); // Более точное измерение времени
+        findShortestPath();
+        long endTime = System.nanoTime();
+        long executionTime = endTime - startTime;
+
+        System.out.println("\nКратчайший путь: " + Arrays.toString(shortestPath) + ", длина: " + shortestPathLength);
+        System.out.println("\nВсе варианты маршрутов:");
+        for (Integer[] path : AllPermutations) {
+            int pathLength = calculatePathLength(path);
+            System.out.println(Arrays.toString(path) + ", длина: " + pathLength);
+        }
+        System.out.println("Время выполнения: " + executionTime / 1000000.0 + " мс"); // В миллисекундах
+         System.out.println("Число итераций: " + AllPermutations.size());
+    }
+
+    static int calculatePathLength(Integer[] path) {
+        int totalDist = 0;
+        for (int i = 0; i < path.length - 1; i++) {
+            totalDist += Matrix[path[i]][path[i + 1]];
+        }
+        totalDist += Matrix[path[path.length - 1]][path[0]]; // Возвращение в начальный город
+        return totalDist;
+    }
+    static void swap(Integer[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+
+    static void reverse(Integer[] arr, int i, int j) {
+        while (i < j) {
+            swap(arr, i, j);
+            i++;
+            j--;
+        }
+    }
+
+    // Алгоритм нахождения следующей перестановки
+    static boolean nextPermutation(Integer[] arr) {
+        int i = arr.length - 2;
+        while (i >= 0 && arr[i] >= arr[i + 1]) {
+            i--;
+        }
+        if (i < 0) {
+            return false;
+        }
+        int j = arr.length - 1;
+        while (arr[j] <= arr[i]) {
+            j--;
+        }
+        swap(arr, i, j);
+        reverse(arr, i + 1, arr.length - 1);
+        return true;
+    }
+    static void findShortestPath() {
+        Integer[] Permutation = new Integer[number0fStreets];
+        for (int i = 0; i < number0fStreets; i++) {
+            Permutation[i] = i;
+        }
+
+        do {
+            AllPermutations.add(Permutation.clone());
+            int pathLength = calculatePathLength(Permutation);
+            if (pathLength < shortestPathLength) {
+                shortestPathLength = pathLength;
+                shortestPath = Permutation.clone();
+            }
+        } while (nextPermutation(Permutation));
+    }
+}
+ 
+Приложение 2
+
+Метод ближайшего соседа: 
+
+import java.util.*;
+
+public class NearestNeighbor {
+
+   	  static int[][] Matrix;
+   	  static int numberOfStreets;
+   	  static int startStreet = 0;  // Начальный город
+
+    public static void main(String[] args) {
+
+        Matrix = new int[][]{
+                {0, 7, 11, 18},
+                {6, 0, 9, 13},
+                {10, 8, 0, 6},
+                {15, 12, 6, 0}
+        };
+        numberOfStreets = Matrix.length;
+
+        long startTime = System.nanoTime();
+        int[] bestPath = nearestNeighbor();
+        int bestPathLength = calculatePathLength(bestPath);
+
+        long endTime = System.nanoTime();
+        long executionTime = endTime - startTime;
+
+        System.out.println("Кратчайший путь: " + Arrays.toString(bestPath) + ", длина: " + bestPathLength);
+        System.out.println("Время выполнения: " + executionTime / 1000000.0 + " мс");
+        System.out.println("Число итераций (посещённых улиц): " + numberOfStreets);
+    }
+
+    private static int[] nearestNeighbor() {
+        boolean[] visited = new boolean[numberOfStreets];
+        int[] path = new int[numberOfStreets];
+        path[0] = startStreet;
+        visited[startStreet] = true;
+
+        for (int i = 1; i < numberOfStreets; i++) {
+            int currentStreet = path[i - 1];
+            int nextStreet = -1;
+            int minDistance = Integer.MAX_VALUE;
+
+            for (int j = 0; j < numberOfStreets; j++) {
+                if (!visited[j] && Matrix[currentStreet][j] < minDistance) {
+                    minDistance = Matrix[currentStreet][j];
+                    nextStreet = j;
+                }
+            }
+
+            path[i] = nextStreet;
+            visited[nextStreet] = true;
+        }
+
+        return path;
+    }
+
+    private static int calculatePathLength(int[] path) {
+        int totalDist = 0;
+        for (int i = 0; i < path.length - 1; i++) {
+            totalDist += Matrix[path[i]][path[i + 1]];
+        }
+        totalDist += Matrix[path[path.length - 1]][startStreet]; // Возвращение в начальный город
+        return totalDist;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+Приложение 3
+
+Код для создания матрицы расстояний с заданием количества строк и столбцов:
+
+import java.util.Random;
+
+    public class matrix {
+        public static void main(String[] args) {
+            int rows = 10; // Строки
+            int cols = 10; // Колонки
+            int maxValue = 100; // Поменять для изменения диапазона случайных чисел
+
+            int[][] matrix = createRandomIntMatrix(rows, cols, maxValue);
+
+            for (int i = 0; i < rows; i++) {
+                System.out.print("{");
+                for (int j = 0; j < cols; j++) {
+                    System.out.print(matrix[i][j]);
+                    if (j < cols - 1) {
+                        System.out.print(", ");
+                    }
+                }
+                System.out.println("},");
+            }
+        }
+public static int[][] createRandomIntMatrix(int rows, int cols, int maxValue) {
+    Random random = new Random();
+    int[][] matrix = new int[rows][cols];
+
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (i == j) {
+                matrix[i][j] = 0;
+            } else {
+                matrix[i][j] = random.nextInt(maxValue + 1);
+            }
+        }
+    }
+    return matrix;
+}
+ 
+Приложение 4
+
+Метод ветвей и границ:
+
+import java.util.Arrays;
+
+public class BranchAndBound {
+
+   	  static int[][] Matrix;
+   	  static int numberOfStreets;
+   	  static int bestPathLength = Integer.MAX_VALUE;
+ 	  static int[] bestPath;
+  static long iterations = 0;
+
+    public static void main(String[] args) {
+        Matrix = new int[][]{
+                {0, 7, 11, 18},
+                {6, 0, 9, 13},
+                {10, 8, 0, 6},
+                {15, 12, 6, 0}
+        };
+        numberOfStreets = Matrix.length;
+
+        long startTime = System.nanoTime();
+        bestPath = new int[numberOfStreets];
+        bAndB(new int[numberOfStreets], 0, 0, Integer.MAX_VALUE);
+        long endTime = System.nanoTime();
+        long executionTime = endTime - startTime;
+
+        System.out.println("Кратчайший путь: " + Arrays.toString(bestPath) + ", длина: " + bestPathLength);
+        System.out.println("Время выполнения: " + executionTime / 1000000.0 + " мс");
+        System.out.println("Число итераций (узлов в дереве поиска): " + iterations);
+    }
+
+    private static void bAndB(int[] currentPath, int currentStreet, int currentLength, int upperBound) {
+        iterations++;
+        if (currentStreet == numberOfStreets) {
+            int returnLength = currentLength + Matrix[currentPath[numberOfStreets - 1]][0]; // Return to starting city
+            if (returnLength < bestPathLength) {
+                bestPathLength = returnLength;
+                System.arraycopy(currentPath, 0, bestPath, 0, numberOfStreets);
+            }
+            return;
+        }
+
+        for (int nextStreet = 0; nextStreet < numberOfStreets; nextStreet++) {
+            boolean visited = false;
+            for (int k = 0; k < currentStreet; k++) {
+                if (currentPath[k] == nextStreet) {
+                    visited = true;
+                    break;
+                }
+            }
+            if (!visited) {
+                int nextLength = currentLength + Matrix[currentStreet == 0 ? 0 : currentPath[currentStreet - 1]][nextStreet];
+
+                if (nextLength < upperBound) { //Ветвь обрезается, если длина пути больше текущей верхней границы
+                    currentPath[currentStreet] = nextStreet;
+                    bAndB(currentPath, currentStreet + 1, nextLength, upperBound);
+                }
+            }
+        }
+    }
+}
+
 

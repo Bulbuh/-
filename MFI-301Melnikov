@@ -92,7 +92,15 @@ public class TravellingSalesperson {
         } while (nextPermutation(Permutation));
     }
 }
- 
+
+
+
+
+
+
+
+
+
 Приложение 2
 
 Метод ближайшего соседа: 
@@ -214,7 +222,17 @@ public static int[][] createRandomIntMatrix(int rows, int cols, int maxValue) {
     }
     return matrix;
 }
- 
+
+
+
+
+
+
+
+
+
+
+
 Приложение 4
 
 Метод ветвей и границ:
